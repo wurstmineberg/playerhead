@@ -4,6 +4,6 @@ Requirements
 ============
 
 *   [Python](http://python.org/) 3.4
-*   [Pillow](http://pypi.python.org/pypi/Pillow) 2.5
+*   [Pillow](http://pypi.python.org/pypi/Pillow) 2.8
 *   [docopt](http://docopt.org/)
 *   [requests](http://www.python-requests.org/) 2.1

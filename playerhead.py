@@ -56,9 +56,9 @@ def java_uuid_hash_code(uuid):
     return (l1 ^ l2) ^ (m1 ^ m2)
 
 def skin(player, profile_id=None):
-    request = requests.get('http://skins.minecraft.net/MinecraftSkins/' + player + '.png') #TODO get skin by UUID if given
+    response = requests.get('http://skins.minecraft.net/MinecraftSkins/' + player + '.png', stream=True) #TODO get skin by UUID if given
     try:
-        request.raise_for_status()
+        response.raise_for_status()
     except requests.exceptions.HTTPError:
         if profile_id is None:
             #FROM https://gist.github.com/gschizas/678132e045681395eafa
@@ -69,7 +69,7 @@ def skin(player, profile_id=None):
             return Image.open('/var/www/wurstmineberg.de/assets/img/head/steve.png')
         else:
             return Image.open('/var/www/wurstmineberg.de/assets/img/head/alex.png')
-    return Image.open(io.BytesIO(request.content))
+    return Image.open(response.raw)
 
 def write_head(player, target_dir=None, size=8, filename=None, error_log=None, profile_id=None, hat=True):
     if target_dir is None:
