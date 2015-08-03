@@ -81,7 +81,7 @@ def write_head(player, target_dir=None, size=8, filename=None, error_log=None, p
     if not check_nick(player):
         print('Invalid player name: ' + player, file=error_log)
         return False
-    head(player, hat=hat profile_id=profile_id).resize((size, size)).save(str(dir / ((player if filename is None else filename) + '.png')))
+    head(player, hat=hat, profile_id=profile_id).resize((size, size)).save(str(dir / ((player if filename is None else filename) + '.png')))
     return True
 
 if __name__ == '__main__':
@@ -91,7 +91,7 @@ if __name__ == '__main__':
         'size': int(arguments['--size']),
         'target_dir': arguments['--output-dir'] or pathlib.Path('/var/www/wurstmineberg.de/assets/img/head') / arguments['--size']
     }
-    with open('/dev/null', 'a') as dev_null):
+    with open('/dev/null', 'a') as dev_null:
         if arguments['--quiet']:
             kwargs['error_log'] = dev_null
         if arguments['--from-people-file']:
