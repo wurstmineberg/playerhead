@@ -44,7 +44,7 @@ def check_nick(player):
 def head(player, hat=True, profile_id=None):
     player_skin = skin(player, profile_id=profile_id)
     if hat:
-        return player_skin.crop((8, 8, 16, 16)).alpha_composite(player_skin.crop((40, 8, 48, 16)))
+        return Image.alpha_composite(player_skin.crop((8, 8, 16, 16)), player_skin.crop((40, 8, 48, 16)))
     return player_skin.crop((8, 8, 16, 16))
 
 def java_uuid_hash_code(uuid):
