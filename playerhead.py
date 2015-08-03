@@ -66,9 +66,9 @@ def skin(player, profile_id=None):
             profile_id = uuid.UUID(profile_info['id'])
         profile_hash = java_uuid_hash_code(profile_id)
         if profile_hash % 2 == 0:
-            return Image.open('/var/www/wurstmineberg.de/assets/img/head/steve.png')
+            return Image.open('/opt/git/github.com/wurstmineberg/playerhead/steve.png')
         else:
-            return Image.open('/var/www/wurstmineberg.de/assets/img/head/alex.png')
+            return Image.open('/opt/git/github.com/wurstmineberg/playerhead/alex.png')
     return Image.open(response.raw)
 
 def write_head(player, target_dir=None, size=8, filename=None, error_log=None, profile_id=None, hat=True):
