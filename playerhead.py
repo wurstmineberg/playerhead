@@ -81,7 +81,7 @@ def write_head(player, target_dir=None, size=8, filename=None, error_log=None, p
     if not check_nick(player):
         print('Invalid player name: ' + player, file=error_log)
         return False
-    head(player, hat=hat, profile_id=profile_id).resize((size, size)).save(str(dir / ((player if filename is None else filename) + '.png')))
+    head(player, hat=hat, profile_id=profile_id).resize((size, size)).save(str(target_dir / ((player if filename is None else filename) + '.png')))
     return True
 
 if __name__ == '__main__':
