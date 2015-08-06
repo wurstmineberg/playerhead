@@ -93,7 +93,7 @@ def skin(player, profile_id=None, error_log=None):
             print('Failed to decode response: {!r}'.format(response), file=error_log)
             raise
         profile_id = uuid.UUID(j['id'])
-        response = retry_request('https://sessionserver.mojang.com/session/minecraft/profile/{}'.format(re.sub('-', '', str(profile_id))), error_log=error_log)
+    response = retry_request('https://sessionserver.mojang.com/session/minecraft/profile/{}'.format(re.sub('-', '', str(profile_id))), error_log=error_log)
     textures = json.loads(base64.b64decode(response.json()['properties'][0]['value'].encode('utf-8')).decode('utf-8'))['textures']
     if 'SKIN' not in textures:
         # default skin
