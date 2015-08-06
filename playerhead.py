@@ -144,6 +144,8 @@ if __name__ == '__main__':
                             kwargs['filename'] = person['id']
                         if 'minecraftUUID' in person:
                             kwargs['profile_id'] = uuid.UUID(person['minecraftUUID'])
+                        elif 'profile_id' in kwargs:
+                            del kwargs['profile_id']
                         if not write_head(person['minecraft'], **kwargs):
                             sys.exit(1)
                     else:
