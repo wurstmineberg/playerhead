@@ -9,10 +9,10 @@ Usage:
 Options:
   -h, --help               Print this message and exit.
   -i, --use-person-id      Save the image with the person's id instead of their Minecraft username.
-  -q, --quiet              Do not print error messages.
   -o, --output-dir=<dir>   Path to the directory where the heads will be saved and where Player.png is stored. Defaults to a subdirectory in /var/www/wurstmineberg.de/assets/img/head, depending on --size.
+  -p, --from-people-file   Get player names from the people file.
+  -q, --quiet              Do not print error messages.
   -s, --size=<pixels>      Resize the head to this width and height, using the nearest-neighbor algorithm [default: 8].
-  --from-people-file       Get player names from the people file.
   --no-hat                 Don't include the hat layer.
   --people-file=<file>     Path to the people file, used only when --from-people-file is present [default: /opt/wurstmineberg/config/people.json].
   --version                Print version info and exit.
