@@ -25,6 +25,7 @@ __version__ = '3.0.0'
 import sys
 
 from PIL import Image
+import base64
 from docopt import docopt
 import io
 import json
@@ -56,19 +57,22 @@ def java_uuid_hash_code(uuid):
     return (l1 ^ l2) ^ (m1 ^ m2)
 
 def skin(player, profile_id=None):
-    response = requests.get('http://skins.minecraft.net/MinecraftSkins/' + player + '.png', stream=True) #TODO get skin by UUID if given
-    try:
+    if profile_id is None:
+        response = requests.get('https://api.mojang.com/users/profiles/minecraft/{}'.format(player))
         response.raise_for_status()
-    except requests.exceptions.HTTPError:
-        if profile_id is None:
-            #FROM https://gist.github.com/gschizas/678132e045681395eafa
-            profile_info = requests.get('https://api.mojang.com/users/profiles/minecraft/' + player).json()
-            profile_id = uuid.UUID(profile_info['id'])
+        profile_id = uuid.UUID(response.json()['id'])
+    response = requests.get('https://sessionserver.mojang.com/session/minecraft/profile/{}'.format(re.sub('-', '', str(profile_id))))
+    response.raise_for_status()
+    textures = json.loads(base64.b64decode(response.json()['properties'][0]['value'].encode('utf-8')).decode('utf-8'))['textures']
+    if 'SKIN' not in textures:
+        # default skin
         profile_hash = java_uuid_hash_code(profile_id)
         if profile_hash % 2 == 0:
             return Image.open('/opt/git/github.com/wurstmineberg/playerhead/master/steve.png')
         else:
             return Image.open('/opt/git/github.com/wurstmineberg/playerhead/master/alex.png')
+    response = requests.get(textures['SKIN']['url'], stream=True)
+    response.raise_for_status()
     return Image.open(response.raw)
 
 def write_head(player, target_dir=None, size=8, filename=None, error_log=None, profile_id=None, hat=True):
