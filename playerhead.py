@@ -174,8 +174,10 @@ if __name__ == '__main__':
     kwargs = {
         'full_body': arguments['--full-body'],
         'hat': not arguments['--no-hat'],
-        'target_dir': arguments['--output-dir'] or pathlib.Path('/var/www/wurstmineberg.de/assets/img/head') / arguments['--size']
+        'target_dir': pathlib.Path('/var/www/wurstmineberg.de/assets/img/head') / (arguments['--size'] or 'default')
     }
+    if arguments['--output-dir']:
+        kwargs['target_dir'] = pathlib.Path(arguments['--output-dir'])
     if arguments['--size']:
         kwargs['width'] = int(arguments['--size'])
     if arguments['--height']:
