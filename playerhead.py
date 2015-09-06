@@ -135,7 +135,7 @@ def skin(player, *, profile_id=None, error_log=None):
             return Image.open('/opt/git/github.com/wurstmineberg/playerhead/master/alex.png'), 'alex'
     response = requests.get(textures['SKIN']['url'], stream=True)
     response.raise_for_status()
-    return Image.open(response.raw), textures['SKIN'].get('model') == 'slim'
+    return Image.open(response.raw), 'alex' if textures['SKIN'].get('model') == 'slim' else 'steve'
 
 def write_head(player, *, target_dir=None, width=None, height=None, filename=None, error_log=None, profile_id=None, hat=True, full_body=False):
     try:
