@@ -80,7 +80,7 @@ def body(player, *, player_skin=None, model=None, hat=True, profile_id=None, err
             hat_layer.paste(player_skin.crop((44, 36, 47 if model == 'alex' else 48, 48)), (1 if model == 'alex' else 0, 8)) # right sleeve
             hat_layer.paste(player_skin.crop((4, 52, 8, 64)), (8, 20)) # left pants leg
             hat_layer.paste(player_skin.crop((52, 52, 55 if model == 'alex' else 56, 64)), (12, 8)) # left sleeve
-            return Image.alpha_composite(result, hat_layer)
+        return Image.alpha_composite(result, hat_layer)
     return result
 
 def java_uuid_hash_code(uuid):
