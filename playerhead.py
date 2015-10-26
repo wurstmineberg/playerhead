@@ -16,13 +16,13 @@ Options:
   --full-body              Generate a front-view image of the entire skin, not just the head.
   --height=<pizels>        Resize the head to this height, using the nearest-neighbor algorithm. By default, a height proportional to the width is used.
   --no-hat                 Don't include the overlay layers (hat, jacket, sleeves, pants).
-  --people-file=<file>     Path to the people file, used only when --from-people-file is present [default: /opt/wurstmineberg/config/people.json].
+  --people-file=<file>     Deprecated. The --from-people-file option now reads directly from the database.
   --version                Print version info and exit.
   --whitelist              Get player names from the whitelist. May be a new-style JSON whitelist or an old-style plaintext whitelist.
   --whitelist-file=<file>  Path to the server whitelist, used only when --whitelist is present [default: /opt/wurstmineberg/world/wurstmineberg/whitelist.json].
 """
 
-__version__ = '3.0.0'
+__version__ = '3.0.1'
 
 import sys
 
@@ -186,19 +186,20 @@ if __name__ == '__main__':
         if arguments['--quiet']:
             kwargs['error_log'] = dev_null
         if arguments['--from-people-file']:
-            with open(arguments['--people-file']) as people:
-                for person in json.load(people)['people']:
-                    if 'minecraft' in person:
-                        if arguments['--use-person-id']:
-                            kwargs['filename'] = person['id']
-                        if 'minecraftUUID' in person:
-                            kwargs['profile_id'] = uuid.UUID(person['minecraftUUID'])
-                        elif 'profile_id' in kwargs:
-                            del kwargs['profile_id']
-                        if not write_head(person['minecraft'], **kwargs):
-                            sys.exit(1)
-                    else:
-                        print('No Minecraft nickname specified for person with id ' + person['id'], file=sys.stderr)
+            import people
+
+            for wmb_id, person in people.get_people_db().obj_dump(version=3)['people'].items():
+                if len(person.get('minecraft', {}).get('nicks', [])) > 0:
+                    if arguments['--use-person-id']:
+                        kwargs['filename'] = wmb_id
+                    if 'uuid' in person['minecraft']:
+                        kwargs['profile_id'] = uuid.UUID(person['minecraft']['uuid'])
+                    elif 'profile_id' in kwargs:
+                        del kwargs['profile_id']
+                    if not write_head(person['minecraft']['nicks'][-1], **kwargs):
+                        sys.exit(1)
+                else:
+                    print('No Minecraft nickname specified for person with id ' + person['id'], file=sys.stderr)
         elif arguments['--whitelist']:
             with open(WHITELIST) as whitelist:
                 try:
