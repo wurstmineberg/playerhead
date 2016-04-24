@@ -22,7 +22,7 @@ Options:
   --whitelist-file=<file>  Path to the server whitelist, used only when --whitelist is present [default: /opt/wurstmineberg/world/wurstmineberg/whitelist.json].
 """
 
-__version__ = '3.0.1'
+__version__ = '3.0.2'
 
 import sys
 
@@ -51,9 +51,10 @@ def head(player, *, player_skin=None, hat=True, profile_id=None, error_log=None)
         error_log = sys.stderr
     if player_skin is None:
         player_skin, _ = skin(player, profile_id=profile_id, error_log=error_log)
-    if hat:
-        return Image.alpha_composite(player_skin.crop((8, 8, 16, 16)), player_skin.crop((40, 8, 48, 16)))
-    return player_skin.crop((8, 8, 16, 16))
+    with player_skin:
+        if hat:
+            return Image.alpha_composite(player_skin.crop((8, 8, 16, 16)), player_skin.crop((40, 8, 48, 16)))
+        return player_skin.crop((8, 8, 16, 16))
 
 def body(player, *, player_skin=None, model=None, hat=True, profile_id=None, error_log=None):
     if error_log is None:
@@ -71,17 +72,18 @@ def body(player, *, player_skin=None, model=None, hat=True, profile_id=None, err
     else: # new-style skin
         result.paste(player_skin.crop((20, 52, 24, 64)), (8, 20)) # left leg
         result.paste(player_skin.crop((36, 52, 39 if model == 'alex' else 40, 64)), (12, 8)) # left arm
-    if hat:
-        hat_layer = Image.new('RGBA', (16, 32))
-        hat_layer.paste(player_skin.crop((40, 8, 48, 16)), (4, 0)) # hat
-        if player_skin.size[1] == 64: # new-style skin
-            hat_layer.paste(player_skin.crop((20, 36, 28, 48)), (4, 8)) # jacket
-            hat_layer.paste(player_skin.crop((4, 36, 8, 48)), (4, 20)) # right pants leg
-            hat_layer.paste(player_skin.crop((44, 36, 47 if model == 'alex' else 48, 48)), (1 if model == 'alex' else 0, 8)) # right sleeve
-            hat_layer.paste(player_skin.crop((4, 52, 8, 64)), (8, 20)) # left pants leg
-            hat_layer.paste(player_skin.crop((52, 52, 55 if model == 'alex' else 56, 64)), (12, 8)) # left sleeve
-        return Image.alpha_composite(result, hat_layer)
-    return result
+    with player_skin:
+        if hat:
+            hat_layer = Image.new('RGBA', (16, 32))
+            hat_layer.paste(player_skin.crop((40, 8, 48, 16)), (4, 0)) # hat
+            if player_skin.size[1] == 64: # new-style skin
+                hat_layer.paste(player_skin.crop((20, 36, 28, 48)), (4, 8)) # jacket
+                hat_layer.paste(player_skin.crop((4, 36, 8, 48)), (4, 20)) # right pants leg
+                hat_layer.paste(player_skin.crop((44, 36, 47 if model == 'alex' else 48, 48)), (1 if model == 'alex' else 0, 8)) # right sleeve
+                hat_layer.paste(player_skin.crop((4, 52, 8, 64)), (8, 20)) # left pants leg
+                hat_layer.paste(player_skin.crop((52, 52, 55 if model == 'alex' else 56, 64)), (12, 8)) # left sleeve
+            return Image.alpha_composite(result, hat_layer)
+        return result
 
 def java_uuid_hash_code(uuid):
     leastSigBits, mostSigBits = struct.unpack('>QQ', uuid.bytes)
