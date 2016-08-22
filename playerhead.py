@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Get a Minecraft player's skin for Overviewer.
+
+"""Get a Minecraft player's skin.
 
 Usage:
   playerhead [options] [<player>]
@@ -22,7 +23,7 @@ Options:
   --whitelist-file=<file>  Path to the server whitelist, used only when --whitelist is present [default: /opt/wurstmineberg/world/wurstmineberg/whitelist.json].
 """
 
-__version__ = '3.0.2'
+__version__ = '3.0.3'
 
 import sys
 
@@ -137,7 +138,7 @@ def skin(player, *, profile_id=None, error_log=None):
             return Image.open('/opt/git/github.com/wurstmineberg/playerhead/master/alex.png'), 'alex'
     response = requests.get(textures['SKIN']['url'], stream=True)
     response.raise_for_status()
-    return Image.open(response.raw), 'alex' if textures['SKIN'].get('metadata', {}).get('model') == 'slim' else 'steve'
+    return Image.open(response.raw).convert('RGBA'), 'alex' if textures['SKIN'].get('metadata', {}).get('model') == 'slim' else 'steve'
 
 def write_head(player, *, target_dir=None, width=None, height=None, filename=None, error_log=None, profile_id=None, hat=True, full_body=False):
     try:
