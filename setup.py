@@ -7,7 +7,7 @@ setuptools.setup(
     description='Python script which generates image files from Minecraft player heads',
     author='Wurstmineberg',
     author_email='mail@wurstmineberg.de',
-    packages=['playerhead'],
+    py_modules=['playerhead'],
     package_data={'playerhead': ['alex.png', 'steve.png']},
     install_requires=[
         'Pillow',
