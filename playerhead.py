@@ -47,7 +47,7 @@ import uuid
 def check_nick(player):
     return bool(re.match('[A-Za-z0-9_]{1,16}$', player))
 
-def head(player, *, player_skin=None, hat=True, profile_id=None, error_log=None):
+def head(player=None, *, player_skin=None, hat=True, profile_id=None, error_log=None):
     if error_log is None:
         error_log = sys.stderr
     if player_skin is None:
@@ -57,11 +57,11 @@ def head(player, *, player_skin=None, hat=True, profile_id=None, error_log=None)
             return Image.alpha_composite(player_skin.crop((8, 8, 16, 16)), player_skin.crop((40, 8, 48, 16)))
         return player_skin.crop((8, 8, 16, 16))
 
-def body(player, *, player_skin=None, model=None, hat=True, profile_id=None, error_log=None):
+def body(player=None, *, player_skin=None, model=None, hat=True, profile_id=None, error_log=None):
     if error_log is None:
         error_log = sys.stderr
     if player_skin is None or model is None:
-        player_skin, model = skin(player, profile_id=profile_id, error_log=error_log)
+        player_skin, model = skin(player=None, profile_id=profile_id, error_log=error_log)
     result = Image.new('RGBA', (16, 32))
     result.paste(player_skin.crop((8, 8, 16, 16)), (4, 0)) # head
     result.paste(player_skin.crop((20, 20, 28, 32)), (4, 8)) # body
@@ -115,18 +115,21 @@ def retry_request(url, error_log=None, *args, **kwargs):
     response.raise_for_status()
     return response
 
-def skin(player, *, profile_id=None, error_log=None):
+def skin(player=None, *, profile_id=None, error_log=None):
     if error_log is None:
         error_log = sys.stderr
     if profile_id is None:
-        response = requests.get('https://api.mojang.com/users/profiles/minecraft/{}'.format(player))
-        response.raise_for_status()
-        try:
-            j = response.json()
-        except ValueError:
-            print('Failed to decode response: {!r}'.format(response), file=error_log)
-            raise
-        profile_id = uuid.UUID(j['id'])
+        if isinstance(player, uuid.UUID):
+            profile_id = player
+        else:
+            response = requests.get('https://api.mojang.com/users/profiles/minecraft/{}'.format(player))
+            response.raise_for_status()
+            try:
+                j = response.json()
+            except ValueError:
+                print('Failed to decode response: {!r}'.format(response), file=error_log)
+                raise
+            profile_id = uuid.UUID(j['id'])
     response = retry_request('https://sessionserver.mojang.com/session/minecraft/profile/{}'.format(re.sub('-', '', str(profile_id))), error_log=error_log)
     textures = json.loads(base64.b64decode(response.json()['properties'][0]['value'].encode('utf-8')).decode('utf-8'))['textures']
     if 'SKIN' not in textures:
