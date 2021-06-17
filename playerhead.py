@@ -61,7 +61,7 @@ def body(player=None, *, player_skin=None, model=None, hat=True, profile_id=None
     if error_log is None:
         error_log = sys.stderr
     if player_skin is None or model is None:
-        player_skin, model = skin(player=None, profile_id=profile_id, error_log=error_log)
+        player_skin, model = skin(player, profile_id=profile_id, error_log=error_log)
     result = Image.new('RGBA', (16, 32))
     result.paste(player_skin.crop((8, 8, 16, 16)), (4, 0)) # head
     result.paste(player_skin.crop((20, 20, 28, 32)), (4, 8)) # body
