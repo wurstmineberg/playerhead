@@ -75,6 +75,8 @@ pub enum Error {
     MissingContentType,
     #[error("expected exactly 1 item but found 2 or more")]
     Multiple,
+    #[error("failed to upgrade texture URL to HTTPS")]
+    SetScheme,
     #[error("expected image/png content type but got {}", .0.to_str().unwrap_or("(non-ASCII header value)"))]
     UnexpectedContentType(reqwest::header::HeaderValue),
     #[error("skin texture does not intersect expected head coordinates")]
@@ -104,7 +106,9 @@ pub async fn raw_skin(http_client: &reqwest::Client, uuid: Uuid) -> Result<(Pixm
         })
         .exactly_one()?;
     let skin = serde_json::from_str::<Textures>(&value)?.textures.skin;
-    let response = http_client.get(skin.url)
+    let mut url = skin.url;
+    if url.scheme() == "http" { url.set_scheme("https").map_err(|()| Error::SetScheme)? }
+    let response = http_client.get(url)
         .send().await?
         .detailed_error_for_status().await?;
     let content_type = response.headers().get(reqwest::header::CONTENT_TYPE).ok_or(Error::MissingContentType)?;
